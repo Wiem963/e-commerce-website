@@ -71,13 +71,15 @@ Le site inclut un système d’authentification sécurisé avec **JWT**, une API
 
 ### 1. Cloner le dépôt
 
----bash
+--- bash
 git clone https://github.com/Wiem963/e-commerce-website.git
 cd e-commerce-website
 
 python -m venv env
 source env/bin/activate  # Linux/macOS
 env\Scripts\activate     # Windows
+
+---
 
 
 
