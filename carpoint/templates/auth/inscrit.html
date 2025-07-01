@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Car Website</title>
+    <link rel="stylesheet" href="../../static/css/auth.css">
+</head>
+<body>
+        <div class="main">
+            <nav>
+                <div class="logo">
+                    <h3> Car Point</h3>
+
+                </div>
+                <div class="nav-links">
+                    <a href="#">Explore Cars</a>
+                    <div>
+                        <a href="{% url 'index' %}#parts">Our Services</a>
+                        <a class="btn" href="{% url 'index' %}#about">About </a>
+                        <a class="btn" href="{% url 'index' %}#home">Home </a>
+                    </div>
+                </div>
+            </nav>
+            <div class="content">
+                <h1>Buy the best<br>Quality Cars</h1>
+                <div class="search">
+                 <form method="get" action="{% url 'search_results' %}">
+                    <input type="search" name="q" placeholder="Search here..." required>
+                </form>
+                </div>
+            </div>
+        </div>
+        <form method="POST" action="{% url 'register' %}">
+            {% csrf_token %}
+        <div class="form">
+        <div class="box">
+            <input type="text" name="firstname" placeholder="First Name">
+            <input type="text" name="lastname" placeholder="Last Name">
+            <input type="number" name="phone" placeholder="Phone">
+            <select name="user_type" required>
+                <option value="customer">Customer</option>
+                <option value="seller">Seller</option>
+            </select>
+            <input type="email" name="email" placeholder="Email">
+            <input type="password" name="password" placeholder="Password">
+            <input type="password" name="password2" placeholder="Confirm Password">
+        </div>
+        <div class="link">
+            <button type="submit">SignUp</button>
+        </div>
+        <div class="link2">
+            <a href="{% url 'login' %}"> Already have an account? </a>
+        </div>
+    </div>
+        </form>
+{% if errors %}
+    <ul style="color: red;">
+      {% for field, error_list in errors.items %}
+        <li>{{ field }}: {{ error_list.0 }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+    </body>
+</html>

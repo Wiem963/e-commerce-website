@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Make A Deal</title>
+    {% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+   <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .profile-container {
+            position: relative;
+            top: 7rem;
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+            padding: 30px;
+            margin-bottom: 12rem;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .profile-photo {
+            flex-shrink: 0;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #ccc;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #222;
+            margin: 0;
+        }
+        .profile-type {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+        .profile-info {
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        .profile-info p {
+            margin: 12px 0;
+        }
+        .profile-info strong {
+            display: inline-block;
+            width: 100px;
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .profile-info strong {
+                width: auto;
+            }
+        }
+        .button-container {
+    display: flex;
+    justify-content: center;
+            gap: 0.5rem;
+    align-items: center;
+}
+        .deal-input{
+            height: 2.3rem;
+            border-radius: 8px;
+            border: 1px solid #000;
+            width: 17rem;
+            padding: 0 0.5rem;
+        }
+        .blinking-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #000;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+.blinking-button:hover {
+    background-color: #D32F2F;
+    animation: none;
+    opacity: 1;
+}
+.car-card img{
+    height: auto;
+}
+    </style>
+    </head>
+<body>
+<header style="background-color: #f5f5f5;">
+        <div class="nav container">
+            <i class='bx bx-menu'id="menu-icon"></i>
+            <a href="#" class="logo">Car<span>Point</span></a>
+           <ul class="navbar">
+            <li><a href="{% url 'index' %}#home">Home</a></li>
+            <li><a href="{% url 'index' %}#cars">Cars</a></li>
+            <li><a href="{% url 'index' %}#about">About</a></li>
+            <li><a href="{% url 'index' %}#parts">Parts</a></li>
+            <li><a href="{% url 'index' %}#blog">Blog</a></li>
+            {% if user.is_authenticated %}
+                    {% if user.userprofile.user_type == 'seller' %}
+                        <li class="dropdown">
+                            <a href="#">Create</a>
+                            <ul class="dropdown-menu">
+                            <li><a href="{% url 'create_car' %}">Car</a></li>
+                            <li><a href="{% url 'create_part' %}">Part</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="{% url 'offer_list' %}">Offers</a></li>
+                    {% endif %}
+                {% endif %}
+           <li><a href="{% url 'deal_list' %}">Deals</a></li>
+           {% if user.is_authenticated %}
+                    <li><a href="{% url 'modify_profile_information' user.userprofile.user_id %}">Profile</a></li>
+                {% endif %}
+            </ul>
+            <i class='bx bx-search'id="search-icon" style="color: #a93226"></i>
+            <div class="search-box container">
+                <form method="get" action="{% url 'search_results' %}">
+                    <input type="search" name="q" placeholder="Search here..." required>
+                </form>
+            </div>
+        <a href="{% url 'logout' %}" class="details-btn">Logout</a>
+        </div>
+    </header>
+<div class="profile-container">
+    <h1 style="text-align: center">Make A Deal!</h1>
+    <section>
+        <div class="car-card">
+          <img src="{{ car.main_image.url }}" alt="{{ car.name }}">
+          <h3>{{ car.name }}</h3>
+          <p class="price">{{ car.price }} DT</p>
+          <div class="rating">★★★★☆</div>
+          <a href="{% url 'car_details' car.id %}" class="details-btn">Discover</a>
+        </div>
+    </section>
+    <section class="profile-header">
+        <div class="profile-info">
+        <p><strong>Phone :</strong> {{ user.userprofile.phone|default:"Non renseigné" }}</p>
+        <p><strong>Email :</strong> <a href="mailto:{{ user.email }}">{{ user.email|default:"Non renseigné" }}</a></p>
+    </div>
+        <div style="width: 29%"></div>
+        <div>
+            <h1 class="profile-name">{{ user.first_name }} {{ user.last_name }}</h1>
+            <div class="profile-type">{{ user.userprofile.get_user_type_display }}</div>
+        </div>
+        <div class="profile-photo">
+                <img src="{{ user.userprofile.image.url }}" alt="Photo de {{ user.first_name }} {{ user.last_name }}">
+        </div>
+    </section>
+    <div class="button-container">
+        <form method="post" action="{% url 'create_deal' 'car' car.id %}">
+    {% csrf_token %}
+    <input type="number" name="proposal" class="deal-input" placeholder="Give your proposal" step="0.01" required>
+    <button type="submit" class="blinking-button">Make A Deal With</button>
+</form>
+    </div>
+
+    <section class="profile-header">
+        <div class="profile-photo">
+                <img src="{{ seller.image.url }}" alt="Photo de {{ seller.user.username }}">
+        </div>
+        <div>
+            <h1 class="profile-name">{{ seller.user.first_name }} {{ seller.user.last_name }}</h1>
+            <div class="profile-type">{{ seller.get_user_type_display }}</div>
+        </div>
+        <div class="profile-info">
+        <p><strong>Phone :</strong> {{ seller.phone|default:"Non renseigné" }}</p>
+        <p><strong>Email :</strong> <a href="mailto:{{ seller.user.email }}">{{ seller.user.email|default:"Non renseigné" }}</a></p>
+    </div>
+    </section>
+</div>
+</body>
+</html>

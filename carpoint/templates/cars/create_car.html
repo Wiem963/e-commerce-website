@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add a New Car</title>
+    <link rel="stylesheet" href="../../static/css/auth.css">
+    <link rel="stylesheet" href="../../static/css/cars.css">
+</head>
+<body>
+<nav>
+    <div class="logo">
+        <h3> Car Point</h3>
+        </div>
+        <div class="nav-links">
+            <a href="#">Explore Cars</a>
+                <div>
+                    <a href="{% url 'index' %}#parts">Our Services</a>
+                    <a class="btn" href="{% url 'index' %}#about">About </a>
+                    <a class="btn" href="{% url 'index' %}#home">Home </a>
+                </div>
+        </div>
+</nav>
+    <div class="main">
+        <div class="form-container">
+            <div class="form-create-car">
+                <h1 class="title">Add a New Car</h1>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <div class="box">
+                            <label for="id_name">{{ form.name.label }}</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="box">
+                            <label for="id_year">{{ form.year.label }}</label>
+                            {{ form.year }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="box">
+                            <label for="id_price">{{ form.price.label }}</label>
+                            {{ form.price }}
+                        </div>
+                        <div class="box">
+                            <label for="id_color">{{ form.color.label }}</label>
+                            {{ form.color }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="box">
+                            <label for="id_mileage">{{ form.mileage.label }}</label>
+                            {{ form.mileage }}
+                        </div>
+                        <div class="box">
+                            <label for="id_transmission">{{ form.transmission.label }}</label>
+                            {{ form.transmission }}
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="box">
+                            <label for="id_fuel_type">{{ form.fuel_type.label }}</label>
+                            {{ form.fuel_type }}
+                        </div>
+                        <div class="box">
+                            <label for="id_main_image" class="custom-file-label">Main Image</label>
+                            <div class="file-upload">
+                                {{ form.main_image }}
+                                <span class="file-upload-button" for="id_main_image">Choose File</span>
+                            </div>
+                        </div>
+                        <div class="main-image-preview"></div>
+                    </div>
+                    <div class="box full-width">
+                        <label for="id_description">{{ form.description.label }}</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="box full-width">
+                        <label for="gallery_images" class="custom-file-label">Gallery Images</label>
+                        <div class="file-upload">
+                            <input type="file" id="gallery_images" name="gallery_images" multiple>
+                            <span class="file-upload-button" for="gallery_images">Choose Files</span>
+                        </div>
+                        <div class="image-preview"></div>
+                    </div>
+                    <div class="box full-width text-center">
+                        <button type="submit" class="link">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const galleryInput = document.getElementById('gallery_images');
+            const galleryButton = document.querySelector('.file-upload-button[for="gallery_images"]');
+            const mainImageInput = document.querySelector('input[name="main_image"]');
+            const mainImageButton = document.querySelector('.file-upload-button[for="id_main_image"]');
+
+
+            if (galleryInput && galleryButton) {
+                galleryButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    galleryInput.click();$
+                });
+
+                galleryInput.addEventListener('change', function(e) {
+                    const preview = document.querySelector('.image-preview');
+                    if (preview) {
+                        preview.innerHTML = '';
+                        const files = e.target.files;
+                        for (let file of files) {
+                            if (file.type.startsWith('image/')) {
+                                const reader = new FileReader();
+                                reader.onload = function(event) {
+                                    const img = document.createElement('img');
+                                    img.src = event.target.result;
+                                    img.style.maxWidth = '100px';
+                                    img.style.margin = '5px';
+                                    preview.appendChild(img);
+                                };
+                                reader.readAsDataURL(file);
+                            }
+                        }
+                    }
+                });
+                mainImageInput.addEventListener('change', function(e) {
+                    const main_image_preview = document.querySelector('.main-image-preview');
+                    if (main_image_preview) {
+                        main_image_preview.innerHTML = '';
+                        const files = e.target.files;
+                        for (let file of files) {
+                            if (file.type.startsWith('image/')) {
+                                const reader = new FileReader();
+                                reader.onload = function(event) {
+                                    const img = document.createElement('img');
+                                    img.src = event.target.result;
+                                    img.style.maxWidth = '100px';
+                                    img.style.margin = '5px';
+                                    main_image_preview.appendChild(img);
+                                };
+                                reader.readAsDataURL(file);
+                            }
+                        }
+                    }
+                });
+            } else {
+                console.error('Gallery input or button not found');
+            }
+
+            if (mainImageInput && mainImageButton) {
+                mainImageButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    mainImageInput.click();
+                });
+            } else {
+                console.error('Main image input or button not found');
+            }
+        });
+    </script>
+</body>
+</html>

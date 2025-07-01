@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>User Profile</title>
+    {% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .profile-container {
+            top: 7rem;
+            position: relative;
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+            padding: 30px;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .profile-photo {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: #ccc;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+        .profile-photo input[type="file"] {
+    display: none;
+}
+
+
+.photo-overlay {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: 0.3s ease;
+}
+
+.photo-overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: 0.3s ease;
+}
+
+.camera-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.6);
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s ease;
+}
+
+.photo-overlay::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+    opacity: 0;
+    border-radius: 50%;
+    transition: 0.3s ease;
+}
+
+.profile-photo:hover .photo-overlay::after,
+.profile-photo:hover .camera-icon {
+    opacity: 1;
+    cursor: pointer;
+}
+
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #222;
+            margin: 0;
+            display: inline;
+        }
+        .profile-type {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+        .save-button:hover {
+            background-color: #D32F2F;
+            cursor: pointer;
+            border: 2px #D32F2F solid;
+        }
+        .save-button {
+            display: inline-block;
+            background-color: #000;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .edit-input {
+            height: 2rem;
+            width: 20rem;
+            margin-right: 0.2rem;
+            border-radius: 0.3rem;
+            border: 1px black solid;
+            font-size: 1rem;
+            padding-left: 1rem;
+        }
+        .edit-icon {
+            color: gray;
+            font-size: larger;
+            cursor: pointer;
+        }
+        .profile-info {
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        .profile-info p {
+            margin: 12px 0;
+        }
+        .profile-info strong {
+            display: inline-block;
+            width: 100px;
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .profile-info strong {
+                width: auto;
+            }
+        }
+    </style>
+    </head>
+<body>
+<header style="background-color: #f5f5f5;">
+        <div class="nav container">
+            <i class='bx bx-menu'id="menu-icon"></i>
+            <a href="#" class="logo">Car<span>Point</span></a>
+           <ul class="navbar">
+            <li><a href="{% url 'index' %}#home">Home</a></li>
+            <li><a href="{% url 'index' %}#cars">Cars</a></li>
+            <li><a href="{% url 'index' %}#about">About</a></li>
+            <li><a href="{% url 'index' %}#parts">Parts</a></li>
+            <li><a href="{% url 'index' %}#blog">Blog</a></li>
+            {% if user.is_authenticated %}
+                    {% if user.userprofile.user_type == 'seller' %}
+                        <li class="dropdown">
+                            <a href="#">Create</a>
+                            <ul class="dropdown-menu">
+                            <li><a href="{% url 'create_car' %}">Car</a></li>
+                            <li><a href="{% url 'create_part' %}">Part</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="{% url 'offer_list' %}">Offers</a></li>
+                    {% endif %}
+                {% endif %}
+           <li><a href="{% url 'deal_list' %}">Deals</a></li>
+           {% if user.is_authenticated %}
+                    <li><a href="{% url 'modify_profile_information' user.userprofile.user_id %}" class="active">Profile</a></li>
+                {% endif %}
+            </ul>
+            <i class='bx bx-search'id="search-icon" style="color: #a93226"></i>
+            <div class="search-box container">
+                <form method="get" action="{% url 'search_results' %}">
+                    <input type="search" name="q" placeholder="Search here..." required>
+                </form>
+            </div>
+        <a href="{% url 'logout' %}" class="details-btn">Logout</a>
+        </div>
+    </header>
+<div class="profile-container">
+    <section class="profile-header">
+        <div class="profile-photo"  id="profilePhoto">
+            <div class="photo-overlay">
+                <img src="{{ userprofile.image.url }}" alt="Photo de {{ userprofile.user.username }}" id="profileImage">
+                 <div class="camera-icon">&#128247;</div>
+            </div>
+            <input type="file" name="image" title="Changer la photo de profil" id="fileInput">
+
+        </div>
+        <div id="nameField">
+            <h1 class="profile-name" id="nameDisplay">{{ userprofile.user.first_name }} {{ userprofile.user.last_name }}</h1>
+            <span class="edit-icon">&#9998;</span>
+            <div class="profile-type">{{ userprofile.get_user_type_display }}</div>
+        </div>
+    </section>
+
+    <section class="profile-info">
+        <p id="phoneField"><strong>Phone :</strong> <span id="phoneDisplay">{{ userprofile.phone|default:"No Phone" }}</span> <span class="edit-icon">&#9998;</span></p>
+        <p id="addressField"><strong>Address :</strong> <span id="addressDisplay">{{ userprofile.address|default:"No Address" }}</span> <span class="edit-icon">&#9998;</span></p>
+        <p id="emailField"><strong>Email :</strong> <a id="emailDisplay" href="mailto:{{ userprofile.user.email }}">{{ userprofile.user.email|default:"Non renseigné" }}</a> <span class="edit-icon">&#9998;</span></p>
+    </section>
+</div>
+
+<script>
+function makeEditable(fieldId, labelText) {
+    const field = document.getElementById(fieldId);
+    let block;
+
+    if (fieldId === "nameField") {
+        block = field.querySelector("h1[id$='Display']");
+    } else if (fieldId === "phoneField") {
+        block = field.querySelector("span[id$='Display']");
+    } else if (fieldId === "addressField") {
+        block = field.querySelector("span[id$='Display']");
+    } else if (fieldId === "emailField") {
+        block = field.querySelector("a[id$='Display']");
+    }
+
+    const icon = field.querySelector(".edit-icon");
+    const originalValue = block.textContent.trim();
+
+    icon.addEventListener("click", () => {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "edit-input";
+        input.value = originalValue;
+
+        const saveBtn = document.createElement("button");
+        saveBtn.className = "save-button";
+        saveBtn.textContent = "Save";
+
+        if (fieldId === "phoneField")
+            field.innerHTML = `<strong>Phone :</strong>`;
+        else if (fieldId === "addressField")
+            field.innerHTML = `<strong>Address :</strong>`;
+        else if (fieldId === "emailField")
+            field.innerHTML = `<strong>Email :</strong>`;
+        else
+            field.innerHTML = ``;
+
+        field.appendChild(input);
+        field.appendChild(saveBtn);
+
+        if (fieldId === "nameField") {
+            const profileTypeDiv = document.createElement("div");
+            profileTypeDiv.className = "profile-type";
+            profileTypeDiv.textContent = "{{ userprofile.get_user_type_display }}";
+            field.appendChild(profileTypeDiv);
+        }
+
+        saveBtn.addEventListener("click", () => {
+            const newValue = input.value.trim() || "No Phone" || "No Address" ;
+            const fieldName = fieldId === "nameField" ? "name" :
+                              fieldId === "phoneField" ? "phone" :
+                              fieldId === "addressField" ? "address" :
+                              "email";
+
+            fetch("/update-profile/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    field: fieldName,
+                    value: newValue
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    updateDOMAfterSave(fieldId, newValue, block, field, labelText);
+                } else {
+                    alert("Erreur lors de la sauvegarde.");
+                }
+            })
+            .catch(error => {
+                console.error("Erreur:", error);
+            });
+        });
+    });
+}
+
+function updateDOMAfterSave(fieldId, newValue, block, field, labelText) {
+    if (fieldId === "phoneField")
+        field.innerHTML = `<strong>Phone :</strong>`;
+    else if (fieldId === "addressField")
+        field.innerHTML = `<strong>Address :</strong>`;
+    else if (fieldId === "emailField")
+        field.innerHTML = `<strong>Email :</strong>`;
+    else
+        field.innerHTML = `<label>${labelText}</label>`;
+
+    let newBlock;
+    if (fieldId === "nameField")
+        newBlock = document.createElement("h1");
+    if (fieldId === "phoneField" || fieldId === "addressField")
+        newBlock = document.createElement("span");
+    if (fieldId === "emailField") {
+        newBlock = document.createElement("a");
+        newBlock.href = `mailto:${newValue}`;
+    }
+
+    newBlock.id = block.id;
+    newBlock.className = block.className;
+    newBlock.textContent = newValue;
+
+    const newIcon = document.createElement("span");
+    newIcon.className = "edit-icon";
+    newIcon.innerHTML = "&#9998;";
+
+    field.appendChild(newBlock);
+    field.appendChild(newIcon);
+
+    if (fieldId === "nameField") {
+        field.innerHTML += `<div class="profile-type">{{ userprofile.get_user_type_display }}</div>`;
+    }
+
+    makeEditable(fieldId, labelText);
+}
+
+{#function getCookie(name) {#}
+{#    let cookieValue = null;#}
+{#    if (document.cookie && document.cookie !== "") {#}
+{#        const cookies = document.cookie.split(";");#}
+{#        for (let i = 0; i < cookies.length; i++) {#}
+{#            const cookie = cookies[i].trim();#}
+{#            if (cookie.substring(0, name.length + 1) === (name + "=")) {#}
+{#                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));#}
+{#                break;#}
+{#            }#}
+{#        }#}
+{#    }#}
+{#    return cookieValue;}#}
+
+makeEditable("nameField", "");
+makeEditable("phoneField", "");
+makeEditable("addressField", "");
+makeEditable("emailField", "");
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const fileInput = document.getElementById('fileInput');
+const profileImage = document.getElementById('profileImage');
+const profilePhotoDiv = document.getElementById('profilePhoto');
+
+profilePhotoDiv.addEventListener('click', () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = e => {
+        profileImage.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    fetch('/upload-profile-image/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            profileImage.src = data.image_url;
+        } else {
+            alert('Erreur lors de l\'upload de la photo.');
+        }
+    })
+    .catch(() => {
+        alert('Erreur réseau lors de l\'upload.');
+    });
+});
+</script>
+</body>
+</html>

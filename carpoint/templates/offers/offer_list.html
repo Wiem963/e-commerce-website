@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Make A Deal</title>
+    {% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+   <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .profile-container {
+            position: relative;
+            top: 7rem;
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+            padding: 30px;
+            margin-bottom: 12rem;
+        }
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .profile-photo {
+            flex-shrink: 0;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #ccc;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #222;
+            margin: 0;
+        }
+        .profile-type {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+        .profile-info {
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+        .profile-info p {
+            margin: 12px 0;
+        }
+        .profile-info strong {
+            display: inline-block;
+            width: 100px;
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .profile-info strong {
+                width: auto;
+            }
+        }
+        .button-container {
+    display: flex;
+    justify-content: center;
+            gap: 0.5rem;
+    align-items: center;
+}
+        .deal-input{
+            height: 2.3rem;
+            border-radius: 8px;
+            border: 1px solid #000;
+            width: 17rem;
+            padding: 0 0.5rem;
+        }
+
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+.car-card img{
+    height: auto;
+}
+@media (max-width: 900px) {
+    .deal-card {
+        flex-direction: column !important;
+        align-items: center;
+        gap: 15px;
+    }
+    .deal-card > div {
+        flex: none !important;
+        width: 100% !important;
+        text-align: center;
+    }
+    .status-container button {
+        width: 80% !important;
+        margin: 0 auto;
+    }
+    .status-container p {
+        font-size: 1.2rem;
+    }
+}
+
+    </style>
+    </head>
+<body>
+<header style="background-color: #f5f5f5;">
+        <div class="nav container">
+            <i class='bx bx-menu'id="menu-icon"></i>
+            <a href="#" class="logo">Car<span>Point</span></a>
+           <ul class="navbar">
+            <li><a href="{% url 'index' %}#home">Home</a></li>
+            <li><a href="{% url 'index' %}#cars">Cars</a></li>
+            <li><a href="{% url 'index' %}#about">About</a></li>
+            <li><a href="{% url 'index' %}#parts">Parts</a></li>
+            <li><a href="{% url 'index' %}#blog">Blog</a></li>
+            {% if user.is_authenticated %}
+                    {% if user.userprofile.user_type == 'seller' %}
+                        <li class="dropdown">
+                            <a href="#">Create</a>
+                            <ul class="dropdown-menu">
+                            <li><a href="{% url 'create_car' %}">Car</a></li>
+                            <li><a href="{% url 'create_part' %}">Part</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="{% url 'offer_list' %}" class="active">Offers</a></li>
+                    {% endif %}
+                {% endif %}
+           <li><a href="{% url 'deal_list' %}">Deals</a></li>
+           {% if user.is_authenticated %}
+                    <li><a href="{% url 'modify_profile_information' user.userprofile.user_id %}">Profile</a></li>
+                {% endif %}
+            </ul>
+            <i class='bx bx-search'id="search-icon" style="color: #a93226"></i>
+            <div class="search-box container">
+                <form method="get" action="{% url 'search_results' %}">
+                    <input type="search" name="q" placeholder="Search here..." required>
+                </form>
+            </div>
+        <a href="{% url 'logout' %}" class="details-btn">Logout</a>
+        </div>
+    </header>
+{% block content %}
+<h1 style="text-align: center; margin-bottom: 30px;">Pending Offers</h1>
+
+<div id="deals-container" style="display: flex; flex-direction: column; gap: 30px; align-items: center;">
+    {% for deal in deals %}
+    <div class="deal-card" data-deal-id="{{ deal.id }}" style="display: flex; width: 80%; border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 20px; background: #fff;">
+        <div style="flex: 1;">
+            <img src="{{ deal.get_product_image_url }}" alt="{{ deal.product.name }}" style="width: 100%; max-width: 200px; border-radius: 10px;">
+        </div>
+
+        <div style="flex: 2; padding: 0 20px;">
+            <h2>{{ deal.product.name }}</h2>
+            <p><strong>Offered Price:</strong> {{ deal.proposal }} DT</p>
+            <p><strong>Sent On:</strong> {{ deal.created_at|date:"Y-m-d H:i" }}</p>
+            <p><strong>Message:</strong> {{ deal.message|default:"No message" }}</p>
+            <p><strong>Status:</strong> <span class="deal-status">{{ deal.status }}</span></p>
+        </div>
+
+        <div style="flex: 2; display: flex; gap: 20px; align-items: center;">
+            <img src="{{ deal.customer.userprofile.image.url }}" alt="Customer Photo" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
+            <div style="display: flex;gap: 0.5rem;flex-direction: column;">
+                <h2>{{ deal.customer.first_name }} {{ deal.customer.last_name }}</h2>
+                <div class="profile-type">Customer</div>
+                <p><strong>Email:</strong> <a href="mailto:{{ deal.customer.email }}">{{ deal.customer.email }}</a></p>
+                <p><strong>Address:</strong> {{ deal.customer.userprofile.address|default:"No Address" }}</p>
+                <p><strong>Phone:</strong> {{ deal.customer.userprofile.phone|default:"No Phone" }}</p>
+            </div>
+        </div>
+
+        <div class="status-container" style="flex: 1; display: flex; flex-direction: column; gap: 10px; justify-content: center; align-items: center;">
+    {% if deal.status == 'pending' %}
+        <button class="btn-accept" data-action="accept" style="background-color: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; width: 100%;">Accept</button>
+        <button class="btn-reject" data-action="reject" style="background-color: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; width: 100%;">Reject</button>
+    {% else %}
+        <p style="font-weight: 700; font-size: 1.1rem; color: {% if deal.status == 'accepted' %}#28a745{% else %}#dc3545{% endif %}; text-transform: capitalize;">
+            {{ deal.status }}
+        </p>
+    {% endif %}
+</div>
+
+    </div>
+    {% empty %}
+    <p>No offers to show.</p>
+    {% endfor %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.btn-accept, .btn-reject').forEach(button => {
+        button.addEventListener('click', function() {
+            const card = this.closest('.deal-card');
+            const dealId = card.dataset.dealId;
+            const action = this.dataset.action;
+
+            fetch(`/deal/${dealId}/${action}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mise à jour du texte du status
+                    card.querySelector('.deal-status').textContent = data.new_status;
+
+                    // Supprimer les boutons accept/reject
+                    const statusContainer = card.querySelector('.status-container');
+                    statusContainer.innerHTML = '';
+
+                    // Créer un nouveau <p> avec le statut et la couleur correspondante
+                    const p = document.createElement('p');
+                    p.style.fontWeight = '700';
+                    p.style.fontSize = '1.1rem';
+                    p.style.textTransform = 'capitalize';
+                    if (data.new_status === 'accepted') {
+                        p.style.color = '#28a745';  // vert
+                    } else if (data.new_status === 'rejected') {
+                        p.style.color = '#dc3545';  // rouge
+                    }
+                    p.textContent = data.new_status;
+
+                    statusContainer.appendChild(p);
+
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(err => {
+                alert('Request failed');
+                console.error(err);
+            });
+        });
+    });
+});
+
+</script>
+
+{% endblock %}
+
+</body>
+</html>

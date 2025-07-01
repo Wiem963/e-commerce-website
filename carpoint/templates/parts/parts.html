@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="x-UA-compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <title>responsive car sale website</title>
+        <link rel="stylesheet" href="../../static/css/style.css">
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    </head>
+    <body>
+
+    <header style="background-color: #f5f5f5;">
+        <div class="nav container">
+            <i class='bx bx-menu'id="menu-icon"></i>
+            <a href="#" class="logo">Car<span>Point</span></a>
+           <ul class="navbar">
+            <li><a href="{% url 'index' %}#home">Home</a></li>
+            <li><a href="{% url 'index' %}#cars">Cars</a></li>
+            <li><a href="{% url 'index' %}#about">About</a></li>
+            <li><a href="{% url 'index' %}#parts">Parts</a></li>
+            <li><a href="{% url 'index' %}#blog">Blog</a></li>
+            {% if user.is_authenticated %}
+                    {% if user.userprofile.user_type == 'seller' %}
+                        <li class="dropdown">
+                            <a href="#">Create</a>
+                            <ul class="dropdown-menu">
+                            <li><a href="{% url 'create_car' %}">Car</a></li>
+                            <li><a href="{% url 'create_part' %}">Part</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="{% url 'offer_list' %}">Offers</a></li>
+                    {% endif %}
+                {% endif %}
+           <li><a href="{% url 'deal_list' %}">Deals</a></li>
+           {% if user.is_authenticated %}
+                    <li><a href="{% url 'modify_profile_information' user.userprofile.user_id %}">Profile</a></li>
+                {% endif %}
+            </ul>
+            <i class='bx bx-search' id="search-icon" style="color: #a93226"></i>
+            <div class="search-box container">
+                <form method="get" action="{% url 'search_results' %}">
+                    <input type="search" name="q" placeholder="Search here..." required>
+                </form>
+            </div>
+        <a href="{% url 'logout' %}" class="details-btn">Logout</a>
+        </div>
+    </header>
+
+<section class="parts" id="parts" style="position: relative;
+    top: 3rem;">
+  <div class="heading">
+    <span class="subtitle">Our Parts</span>
+  </div>
+
+  <div class="parts-container container">
+  {% for part in parts %}
+    <div class="box">
+      <img src="{{ part.image.url}}" alt="{{ part.name}}">
+      <h3>{{ part.name }}</h3>
+      <span>{{ part.price}} DT</span>
+      <div>
+          {% for i in "12345" %}
+            {% with forloop.counter as star %}
+            {% if part.rating >= star %}
+            <i class="fas fa-star" style="color: darkorange;"></i>
+            {% else %}
+            <i class="far fa-star" style="color: darkorange;"></i>
+            {% endif %}
+            {% endwith %}
+        {% endfor %}
+      </div>
+      <a href="{% url 'part_details' part.id %}" class="details">View Details</a>
+    </div>
+    {% endfor %}
+  </div>
+
+<div class="pagination">
+      {% if parts.has_previous %}
+        <a href="?page=1">&laquo; First</a>
+        <a href="?page={{ parts.previous_page_number }}">Previous</a>
+      {% endif %}
+
+      <span class="current">
+        Page {{ parts.number }} of {{ parts.paginator.num_pages }}
+      </span>
+
+      {% if parts.has_next %}
+        <a href="?page={{ parts.next_page_number }}">Next</a>
+        <a href="?page={{ parts.paginator.num_pages }}">Last &raquo;</a>
+      {% endif %}
+    </div>
+</section>
+
+<section class="footer">
+    <div class="footer-container container">
+        <div class="footer-box">
+          <a href="#" class="logo">Car<span> Point</span></a>
+          <div class="social">
+          <a href="#"><i class='bx bxl-facebook' ></i></a>
+          <a href="#"><i class='bx bxl-twitter' ></i></a>
+          <a href="#"><i class='bx bxl-instagram' ></i></a>
+          <a href="#"><i class='bx bxl-youtube' ></i></a>
+
+          </div>
+        </div>
+        <div class="footer-box">
+            <h3>Page</h3>
+            <a href="{% url 'index' %}#home">Home</a>
+            <a href="{% url 'index' %}#cars">Cars</a>
+            <a href="{% url 'index' %}#parts">Parts</a>
+            <a href="{% url 'deal_list' %}">Deals</a>
+        </div>
+        <div class="footer-box">
+            <h3>Legal</h3>
+            <a href="#">Privacy</a>
+            <a href="#">Refund Policy</a>
+            <a href="#">Cookie policy</a>
+        </div>
+        <div class="footer-box">
+            <h3>Contact</h3>
+           <p>Tunisia</p>
+        </div>
+    </div>
+</section>
+<div class="copyright">
+    <P>&#169; 2025 CarPoint — All rights reserved</P>
+</div>
+<script src="../../static/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const navLinks = document.querySelectorAll('.navbar a[href^="#"]');
+  const sections = document.querySelectorAll('section[id]');
+
+  function activateLinkOnScroll() {
+    let scrollY = window.pageYOffset;
+
+    sections.forEach(current => {
+      const sectionHeight = current.offsetHeight;
+      const sectionTop = current.offsetTop - 100; // marge haute
+      const sectionId = current.getAttribute('id');
+
+      if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${sectionId}`) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }
+  activateLinkOnScroll();
+  window.addEventListener('scroll', activateLinkOnScroll);
+  navLinks.forEach(link => {
+    link.addEventListener('click', function () {
+      navLinks.forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+});
+</script>
+
+
+
+</body>
+</html>

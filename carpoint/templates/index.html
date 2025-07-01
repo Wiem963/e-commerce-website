@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="x-UA-compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <title>responsive car sale website</title>
+        <link rel="stylesheet" href="../static/css/style.css">
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    </head>
+    <body>
+
+    <header>
+        <div class="nav container">
+            <i class='bx bx-menu'id="menu-icon"></i>
+            <a href="#home" class="logo">Car<span>Point</span></a>
+            <ul class="navbar">
+                <li><a href="#home"> home</a></li>
+                <li><a href="#cars">cars</a></li>
+                <li><a href="#about">about</a></li>
+                <li><a href="#parts">parts</a></li>
+                <li><a href="#blog">blog</a></li>
+                {% if user.is_authenticated %}
+                    {% if user.userprofile.user_type == 'seller' %}
+                        <li class="dropdown">
+                            <a href="#">Create</a>
+                            <ul class="dropdown-menu">
+                            <li><a href="{% url 'create_car' %}">Car</a></li>
+                            <li><a href="{% url 'create_part' %}">Part</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="{% url 'offer_list' %}">Offers</a></li>
+                    {% endif %}
+                {% endif %}
+            <li><a href="{% url 'deal_list' %}">Deals</a></li>
+            {% if user.is_authenticated %}
+                    <li><a href="{% url 'modify_profile_information' user.userprofile.user_id %}">Profile</a></li>
+                {% endif %}
+            </ul>
+            <i class='bx bx-search'id="search-icon" ></i>
+            <div class="search-box container">
+                <form method="get" action="{% url 'search_results' %}">
+                    <input type="search" name="q" placeholder="Search here..." required>
+                </form>
+            </div>
+            <a href="{% url 'logout' %}" class="details-btn">Logout</a>
+
+        </div>
+    </header>
+    <section class="home" id="home">
+        <div class="home-text">
+            <h1>We Have Everything<br>Your<span>Car</span>Needs</h1>
+            <p>Power & Lexury <br>Your way to happiness</p>
+            <a href="{% url 'part_list' %}" class="btn">Discover Now</a>
+        </div>
+
+ </section>
+<section class="cars-section" style=" position: relative;
+    top: 3rem;" id="cars">
+  <div class="container">
+    <div class="section-header">
+        <span class="subtitle">Our Collection</span>
+        <h2 class="title">Drive Excellence, Choose Your Dream</h2>
+        <p class="description">
+             Discover a refined selection of vehicles designed to match your style, performance, and ambition. Start your journey today.
+        </p>
+</div>
+
+
+    <div class="car-grid">
+        {% for car in cars %}
+      <div class="car-card">
+        <img src="{{ car.main_image.url}}" alt="{{ car.name}}">
+        <h3>{{ car.name }}</h3>
+        <p class="price">{{ car.price }} DT</p>
+        <div class="rating">★★★★☆</div>
+        <a href="{% url 'car_details' car.id %}" class="details-btn">Discover</a>
+      </div>
+        {% endfor %}
+    </div>
+  </div>
+<div class="see-more-container" style="text-align: center; margin-top: 30px;">
+  <a href="{% url 'car_list' %}" class="btn">See More</a>
+</div>
+</section>
+
+ <section class="about container" id="about">
+  <img src="../static/images/about.png" alt="About Car Point">
+
+  <div class="about-content">
+    <span>About Us</span>
+    <h2>Your Trusted Car Marketplace in Tunisia</h2>
+
+    <div id="about-paragraphs">
+      <p>Welcome to Car Point – your trusted online platform for purchasing high-quality cars in Tunisia. We are committed to delivering a smooth and reliable car buying experience to drivers across the country.</p>
+      <p>Explore our wide range of vehicles, from fuel-efficient daily drivers to powerful luxury models, all thoroughly inspected for quality and performance.</p>
+      <div id="more-about" class="collapsed">
+        <p>With detailed listings, sharp images, and transparent pricing, Car Point helps you find the perfect car that matches both your needs and your budget.</p>
+        <p>We also offer support with financing and after-sale services to ensure that your car ownership journey is as seamless as possible.</p>
+        <p>Join thousands of satisfied customers who have found their dream cars on Car Point.</p>
+      </div>
+    </div>
+
+    <a href="javascript:void(0);" class="btn" id="learnMoreBtn">Show More</a>
+  </div>
+</section>
+
+
+<section class="parts" id="parts">
+  <div class="heading">
+    <span class="subtitle">What We Offer</span>
+    <h2>Our Car Parts Are Always Excellent</h2>
+    <p>Discover the new generation of automotive technology</p>
+  </div>
+
+  <div class="parts-container container">
+  {% for part in parts %}
+    <div class="box">
+      <img src="{{ part.image.url}}" alt="{{ part.name}}">
+      <h3>{{ part.name}}</h3>
+      <span>{{ part.price}} DT</span>
+      <div>
+          {% for i in "12345" %}
+            {% with forloop.counter as star %}
+            {% if part.rating >= star %}
+            <i class="fas fa-star" style="color: darkorange;"></i>
+            {% else %}
+            <i class="far fa-star" style="color: darkorange;"></i>
+            {% endif %}
+            {% endwith %}
+        {% endfor %}
+      </div>
+      <a href="{% url 'part_details' part.id %}" class="details">View Details</a>
+    </div>
+    {% endfor %}
+  </div>
+<div class="see-more-container" style="text-align: center; margin-top: 30px;">
+  <a href="{% url 'part_list' %}" class="btn">See More</a>
+</div>
+</section>
+
+<section class="blog" id="blog">
+  <div class="heading">
+    <span class="subtitle">Blog & News</span>
+    <h2>Stay Updated With Our Latest Articles</h2>
+    <p>Explore expert insights, trends, and tips in the automotive world.</p>
+  </div>
+
+  <div class="blog-container container">
+      {% for blog in blogs %}
+    <div class="blog-card">
+      <img src="{{ blog.image.url }}" alt="Blog Image">
+      <div class="blog-content">
+        <span class="date">{{ blog.publish_date}}</span>
+        <h3 class="blog-title">{{ blog.title }}</h3>
+        <p>{{ blog.content|truncatechars:150|safe }}</p>
+        <a href="{% url 'blog_details' blog.id %}" class="blog-btn">Read More <i class='bx bx-right-arrow-alt'></i></a>
+      </div>
+    </div>
+      {% endfor %}
+
+  </div>
+</section>
+
+<section class="footer">
+    <div class="footer-container container">
+        <div class="footer-box">
+          <a href="#home" class="logo">Car<span> Point</span></a>
+          <div class="social">
+          <a href="#"><i class='bx bxl-facebook' ></i></a>
+          <a href="#"><i class='bx bxl-twitter' ></i></a>
+          <a href="#"><i class='bx bxl-instagram' ></i></a>
+          <a href="#"><i class='bx bxl-youtube' ></i></a>
+
+          </div>
+        </div>
+        <div class="footer-box">
+            <h3>Page</h3>
+            <a href="#home">Home</a>
+            <a href="#cars">Cars</a>
+            <a href="#parts">Parts</a>
+            <a href="{% url 'deal_list' %}">Deals</a>
+        </div>
+        <div class="footer-box">
+            <h3>Legal</h3>
+            <a href="#">Privacy</a>
+            <a href="#">Refund Policy</a>
+            <a href="#">Cookie policy</a>
+        </div>
+        <div class="footer-box">
+            <h3>Contact</h3>
+           <p>Tunisia</p>
+        </div>
+    </div>
+</section>
+<div class="copyright">
+    <P>&#169; 2025 CarPoint — All rights reserved</P>
+</div>
+<script src="../static/js/main.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const navLinks = document.querySelectorAll('.navbar a[href^="#"]');
+  const sections = document.querySelectorAll('section[id]');
+
+  function activateLinkOnScroll() {
+    let scrollY = window.pageYOffset;
+
+    sections.forEach(current => {
+      const sectionHeight = current.offsetHeight;
+      const sectionTop = current.offsetTop - 100; // marge haute
+      const sectionId = current.getAttribute('id');
+
+      if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${sectionId}`) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }
+  activateLinkOnScroll();
+  window.addEventListener('scroll', activateLinkOnScroll);
+  navLinks.forEach(link => {
+    link.addEventListener('click', function () {
+      navLinks.forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+});
+document.getElementById("learnMoreBtn").addEventListener("click", function () {
+  const moreAbout = document.getElementById("more-about");
+
+  if (moreAbout.classList.contains("expanded")) {
+    moreAbout.classList.remove("expanded");
+    this.textContent = "Show More";
+  } else {
+    moreAbout.classList.add("expanded");
+    this.textContent = "Show Less";
+  }
+});
+
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Car Website</title>
+    <link rel="stylesheet" href="../../static/css/auth.css">
+</head>
+<body>
+        <div class="main">
+            <nav>
+                <div class="logo">
+                    <h3> Car Point</h3>
+
+                </div>
+                <div class="nav-links">
+                    <a href="#">Explore Cars</a>
+                    <div>
+                        <a href="{% url 'index' %}#parts">Our Services</a>
+                        <a class="btn" href="{% url 'index' %}#about">About </a>
+                        <a class="btn" href="{% url 'index' %}#home">Home </a>
+                    </div>
+                </div>
+            </nav>
+            <div class="content">
+                <h1>Buy the best<br>Quality Cars</h1>
+                <div class="search">
+                 <form method="get" action="{% url 'search_results' %}">
+                    <input type="search" name="q" placeholder="Search here..." required>
+                </form>
+                </div>
+            </div>
+        </div>
+        <form method="POST" action="{% url 'do_login' %}">
+            {% csrf_token %}
+        <div class="form">
+            <div class="box">
+                <input type="email"name="email"placeholder="enter your email">
+                <input type="password"name="password"placeholder="password">
+            </div>
+            <div class="link" style="margin-top: 2rem;">
+              <button type="submit">Log in</button>
+            </div>
+            <div class="link2">
+                <a href="{% url 'signup' %}"> Don't have an account? </a>
+                <a href="#">forgot password?</a>
+            </div>
+        </div>
+</body>
+</html>
